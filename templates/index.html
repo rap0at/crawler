@@ -3,107 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>올뺌 Search</title>
+    <link rel="icon" href="/img/favicon.ico">
     <link rel="icon" href="favicon.ico">
-    <title>올뺌 서치</title>
-    <style>
-        canvas {
-            display: block;
-            margin: auto;
-            background: #f7f7f7;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-
-        form {
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        textarea, input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        input[type="submit"], #saveLinks {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-
-        input[type="submit"]:hover, #saveLinks:hover {
-            background-color: #45a049;
-        }
-
-        #results {
-            margin-top: 20px;
-        }
-
-        #results h3 {
-            margin-bottom: 5px;
-        }
-
-        #results ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        #results ul li {
-            background: #f9f9f9;
-            margin-bottom: 5px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        #linkList {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Keyword Search in Websites</h1>
+        <h1>올뺌 Search Engine</h1>
         <form id="searchForm">
             <div class="form-group">
                 <label for="sites">사이트 리스트</label>
                 <textarea id="sites" name="sites" rows="4" required>https://www.k-startup.go.kr/web/contents/webNOTICE_MATR.do, https://www.kovwa.or.kr/94, https://www.ch2030youth.kr/bbs/board.php?bo_table=notice</textarea>
             </div>
 
-            <p>K-STARTUP, <br> 한국여성밴처협회 <br></p>
+            <p>K-STARTUP, <br> 한국여성밴처협회 <br> 청년이음</p>
 
             <div class="form-group">
                 <label for="keyword">키워드:</label>
@@ -115,8 +29,6 @@
         <button id="saveLinks">링크 리스트 저장</button>
         <textarea id="linkList" rows="10" readonly></textarea>
     </div>
-
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
 
     <script>
         document.getElementById('searchForm').addEventListener('submit', function(event) {
@@ -172,45 +84,6 @@
             a.click();
             URL.revokeObjectURL(url);
         });
-
-        // 게임 캔버스 설정
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // 티라노 이미지
-        const dinoImg = new Image();
-        dinoImg.src = 'https://i.imgur.com/o3DvUkr.png';
-        let dinoX = 50;
-        let dinoY = canvas.height - dinoImg.height;
-        let dinoSpeedY = 0;
-
-        // 게임 루프
-        function gameLoop() {
-            // 티라노 이동
-            dinoY += dinoSpeedY;
-
-            // 그리기
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(dinoImg, dinoX, dinoY);
-
-            requestAnimationFrame(gameLoop);
-        }
-
-        gameLoop();
-
-        // 키보드 이벤트 처리
-        window.addEventListener('keydown', function(event) {
-            if (event.key === ' ' || event.key === 'ArrowUp') {
-                jump();
-            }
-        });
-
-        // 티라노 점프
-        function jump() {
-            if (dinoY === canvas.height - dinoImg.height) {
-                dinoSpeedY = -10;
-            }
-        }
     </script>
 </body>
 </html>
