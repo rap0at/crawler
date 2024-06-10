@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Search</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Keyword Search in Websites</h1>
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="sites">사이트 리스트 (콤마로 구분):</label>
+                <textarea id="sites" name="sites" rows="4" required>https://www.k-startup.go.kr/web/contents/webNOTICE_MATR.do, https://www.kovwa.or.kr/94</textarea>
+            </div>
+            <div class="form-group">
+                <label for="keyword">키워드:</label>
+                <input type="text" id="keyword" name="keyword" required>
+            </div>
+            <input type="submit" value="검색">
+        </form>
+        <div id="results"></div>
+        <button id="saveLinks">링크 리스트 저장</button>
+        <textarea id="linkList" rows="10" readonly></textarea>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const sites = document.getElementById('sites').value.split(',').map(site => site.trim());
+            const keyword = document.getElementById('keyword').value.trim();
+
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ sites, keyword })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = '';
+                let linkListText = '';
+                for (const site in data) {
+                    const siteResults = data[site];
+                    const siteDiv = document.createElement('div');
+                    siteDiv.innerHTML = `<h3>${site}</h3>`;
+                    const ul = document.createElement('ul');
+                    siteResults.forEach(result => {
+                        const li = document.createElement('li');
+                        if (result.url) {
+                            const a = document.createElement('a');
+                            a.href = result.url.startsWith('http') ? result.url : site + result.url;
+                            a.textContent = result.text;
+                            a.target = "_blank";
+                            li.appendChild(a);
+                            linkListText += `${a.href}\n`;
+                        } else {
+                            li.textContent = result.text;
+                        }
+                        ul.appendChild(li);
+                    });
+                    siteDiv.appendChild(ul);
+                    resultsDiv.appendChild(siteDiv);
+                }
+                document.getElementById('linkList').value = linkListText;
+            });
+        });
+
+        document.getElementById('saveLinks').addEventListener('click', function() {
+            const linkList = document.getElementById('linkList').value;
+            const blob = new Blob([linkList], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'links.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
+
