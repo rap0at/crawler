@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>올뺌 Search</title>
+    <link rel="icon" href="/img/favicon.ico">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        input[type="submit"], #saveLinks {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"]:hover, #saveLinks:hover {
+            background-color: #45a049;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        #results h3 {
+            margin-bottom: 5px;
+        }
+
+        #results ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #results ul li {
+            background: #f9f9f9;
+            margin-bottom: 5px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            iframe {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>올뺌 Search Engine</h1>
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="sites">사이트 리스트:</label>
+                <textarea id="sites" name="sites" rows="4" required>https://www.k-startup.go.kr/web/contents/webNOTICE_MATR.do, https://www.kovwa.or.kr/94, https://www.ch2030youth.kr/bbs/board.php?bo_table=notice</textarea>
+            </div>
+
+            <p>K-STARTUP, <br> 한국여성밴처협회 <br> 청년이음</p>
+
+            <div class="form-group">
+                <label for="keyword1">키워드 1:</label>
+                <input type="text" id="keyword1" name="keyword1">
+            </div>
+            <div class="form-group">
+                <label for="keyword2">키워드 2:</label>
+                <input type="text" id="keyword2" name="keyword2">
+            </div>
+            <div class="form-group">
+                <label for="keyword3">키워드 3:</label>
+                <input type="text" id="keyword3" name="keyword3">
+            </div>
+            <input type="submit" value="검색">
+        </form>
+        <div id="results"></div>
+        <button id="saveLinks">링크 리스트 저장</button>
+        <textarea id="linkList" rows="10" readonly></textarea>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const sites = document.getElementById('sites').value.split(',').map(site => site.trim());
+            const keywords = [
+                document.getElementById('keyword1').value.trim(),
+                document.getElementById('keyword2').value.trim(),
+                document.getElementById('keyword3').value.trim()
+            ].filter(keyword => keyword !== "");
+
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ sites, keywords })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = '';
+                let linkListText = '';
+                for (const site in data) {
+                    const siteResults = data[site];
+                    const siteDiv = document.createElement('div');
+                    siteDiv.innerHTML = `<h3>${site}</h3>`;
+                    const ul = document.createElement('ul');
+                    siteResults.forEach(result => {
+                        const li = document.createElement('li');
+                        if (result.url) {
+                            const a = document.createElement('a');
+                            a.href = result.url.startsWith('http') ? result.url : site + result.url;
+                            a.textContent = result.text;
+                            a.target = "_blank";
+                            li.appendChild(a);
+                            linkListText += `${a.href}\n`;
+
+                            // iframe 생성
+                            const iframe = document.createElement('iframe');
+                            iframe.src = a.href;
+                            li.appendChild(iframe);
+                        } else {
+                            li.textContent = result.text;
+                        }
+                        ul.appendChild(li);
+                    });
+                    siteDiv.appendChild(ul);
+                    resultsDiv.appendChild(siteDiv);
+                }
+                document.getElementById('linkList').value = linkListText;
+            });
+        });
+
+        document.getElementById('saveLinks').addEventListener('click', function() {
+            const linkList = document.getElementById('linkList').value;
+            const blob = new Blob([linkList], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'links.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
