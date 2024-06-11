@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>올뺌 Search</title>
-    <link rel="icon" href="/img/favicon.ico">
-    <link rel="icon" href="favicon.ico">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -13,20 +13,20 @@
         <h1>올뺌 Search Engine</h1>
         <form id="searchForm">
             <div class="form-group">
-                <label for="sites">사이트 리스트</label>
+                <label for="sites">LIST</label>
                 <textarea id="sites" name="sites" rows="4" required>https://www.k-startup.go.kr/web/contents/webNOTICE_MATR.do, https://www.kovwa.or.kr/94, https://www.ch2030youth.kr/bbs/board.php?bo_table=notice</textarea>
             </div>
 
             <p>K-STARTUP, <br> 한국여성밴처협회 <br> 청년이음</p>
 
             <div class="form-group">
-                <label for="keyword">키워드:</label>
+                <label for="keyword">Keyword:</label>
                 <input type="text" id="keyword" name="keyword" required>
             </div>
             <input type="submit" value="검색">
         </form>
         <div id="results"></div>
-        <button id="saveLinks">링크 리스트 저장</button>
+        <button id="saveLinks">List Save</button>
         <textarea id="linkList" rows="10" readonly></textarea>
     </div>
 
